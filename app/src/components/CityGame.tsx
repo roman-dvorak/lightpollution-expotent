@@ -7,6 +7,7 @@ import { fadeLightPollution, lpToBortle, bortleToLP } from '../services/stellari
 type LightType =
   | 'globe' | 'fullCutoff' | 'coldLED' | 'pcAmber' | 'floodlight'
   | 'church' | 'house' | 'badBillboard' | 'betterBillboard' | 'darkBillboard' | 'cars'
+  | 'astronomer'
 
 type LampDef = {
   contribution: number   // luminance contribution
@@ -35,11 +36,13 @@ const LAMPS: Record<LightType, LampDef> = {
   betterBillboard: { contribution: 0.0008,    glowColor: '#ffe8a0', glowRadius: 35,  upwardRatio: 0.1,  coneAngle: 50,  kelvin: 4000, heightM: 5,  svgW: 46, svgH: 130, glowFx: 0.5,    glowFy: 12/130  },
   darkBillboard:   { contribution: 0.000001,  glowColor: '#222233', glowRadius: 0,   upwardRatio: 0.0,  coneAngle: 0,   kelvin: 0,    heightM: 5,  svgW: 46, svgH: 120, glowFx: 0.5,    glowFy: 0.5     },
   cars:            { contribution: 0.0015,    glowColor: '#cce8ff', glowRadius: 90,  upwardRatio: 0.08, coneAngle: 12,  kelvin: 6500, heightM: 0,  svgW: 90, svgH: 55,  glowFx: 84/90,  glowFy: 36/55   },
+  astronomer:      { contribution: 0.000001,  glowColor: '#ff3300', glowRadius: 18,  upwardRatio: 0.0,  coneAngle: 0,   kelvin: 1600, heightM: 0,  svgW: 80, svgH: 130, glowFx: 59/80,  glowFy: 62/130  },
 }
 
 const LAMP_ORDER: LightType[] = [
   'globe', 'fullCutoff', 'coldLED', 'pcAmber', 'floodlight',
   'church', 'house', 'badBillboard', 'betterBillboard', 'darkBillboard', 'cars',
+  'astronomer',
 ]
 
 const MAX_LIGHTS = 25
@@ -59,6 +62,7 @@ function smoothSkyColor(pct: number): string {
 // ─── Kelvin → colour ────────────────────────────────────────────────────────────
 
 function kelvinToHex(k: number): string {
+  if (k <= 1600) return '#ff3300'
   if (k <= 1900) return '#ffaa22'
   if (k <= 2700) return '#ffcc55'
   if (k <= 3500) return '#ffe08a'
@@ -263,6 +267,56 @@ function DarkBillboardSVG() {
   )
 }
 
+function AstronomerSVG() {
+  // Tube: pivot (46,87) → objective (15,48)
+  // perp unit ≈ (0.78, −0.63); eyepiece w=4, objective w=6.5
+  return (
+    <svg width="80" height="130" viewBox="0 0 80 130" fill="none">
+      {/* ── Tripod ── */}
+      <line x1="46" y1="87" x2="20" y2="128" stroke="#4a4a5a" strokeWidth="2.5" strokeLinecap="round"/>
+      <line x1="46" y1="87" x2="46" y2="128" stroke="#4a4a5a" strokeWidth="2.5" strokeLinecap="round"/>
+      <line x1="46" y1="87" x2="68" y2="128" stroke="#4a4a5a" strokeWidth="2.5" strokeLinecap="round"/>
+      <line x1="30" y1="113" x2="60" y2="113" stroke="#4a4a5a" strokeWidth="1.5" strokeLinecap="round"/>
+
+      {/* ── Mount head + counterweight ── */}
+      <circle cx="46" cy="87" r="6" fill="#555566"/>
+      <line x1="46" y1="87" x2="54" y2="104" stroke="#555566" strokeWidth="2.5" strokeLinecap="round"/>
+      <circle cx="55" cy="107" r="4.5" fill="#444455"/>
+
+      {/* ── Telescope tube (tapered) ── */}
+      <path d="M50,84 L42,90 L9,53 L20,44 Z" fill="#555566"/>
+      {/* Dew shield / objective cap */}
+      <line x1="8" y1="54" x2="21" y2="43" stroke="#3a3a55" strokeWidth="6" strokeLinecap="round"/>
+      <line x1="8" y1="54" x2="21" y2="43" stroke="#444455" strokeWidth="4" strokeLinecap="round"/>
+      {/* Lens glass glint */}
+      <line x1="10" y1="52" x2="15" y2="47" stroke="#5577aa" strokeWidth="2" strokeLinecap="round" opacity="0.65"/>
+      {/* Tube band */}
+      <line x1="27" y1="71" x2="35" y2="64" stroke="#666677" strokeWidth="2.5" strokeLinecap="round"/>
+      {/* Focuser box */}
+      <rect x="43" y="84" width="8" height="8" rx="2" fill="#444455"/>
+      <rect x="44.5" y="92" width="5" height="5" rx="1.5" fill="#333344"/>
+
+      {/* ── Person ── */}
+      <circle cx="65" cy="38" r="7" fill="#3a3a55"/>
+      {/* Baseball cap */}
+      <path d="M58,37 Q65,26 72,37" fill="#252535"/>
+      <rect x="56" y="37" width="18" height="2.5" rx="1" fill="#252535"/>
+      {/* Body */}
+      <rect x="60" y="45" width="10" height="23" rx="4" fill="#2e2e4a"/>
+      {/* Arm to eyepiece */}
+      <path d="M62,56 C57,63 52,73 49,87" stroke="#2e2e4a" strokeWidth="5" strokeLinecap="round" fill="none"/>
+      {/* Legs */}
+      <line x1="62" y1="68" x2="57" y2="100" stroke="#2e2e4a" strokeWidth="5" strokeLinecap="round"/>
+      <line x1="68" y1="68" x2="72" y2="100" stroke="#2e2e4a" strokeWidth="5" strokeLinecap="round"/>
+
+      {/* ── Red astronomy lamp ── */}
+      <rect x="55" y="57" width="9" height="5" rx="2.5" fill="#550000"/>
+      <circle cx="59" cy="59.5" r="3.5" fill="#cc1100" fillOpacity="0.9"/>
+      <circle cx="59" cy="59.5" r="1.8" fill="#ff5533"/>
+    </svg>
+  )
+}
+
 function CarsSVG() {
   return (
     <svg width="90" height="55" viewBox="0 0 90 55" fill="none">
@@ -298,6 +352,7 @@ const LAMP_SVG: Record<LightType, (color: string) => ReactElement> = {
   betterBillboard: (c) => <BetterBillboardSVG color={c} />,
   darkBillboard:   (_) => <DarkBillboardSVG />,
   cars:            (_) => <CarsSVG />,
+  astronomer:      (_) => <AstronomerSVG />,
 }
 
 // ─── Glow overlay ───────────────────────────────────────────────────────────────
@@ -406,6 +461,17 @@ function LampGlow({ lamp, def, canvasH }: { lamp: PlacedLight; def: LampDef; can
       <div className="absolute pointer-events-none" style={W}>
         <div style={{ position:'absolute', left:-r*1.5, top:extY-r*0.5, width:r*3, height:r, borderRadius:'50%', background:`radial-gradient(ellipse, ${color}66 0%, transparent 70%)`, filter:`blur(${r*0.35}px)` }}/>
         <div style={{ position:'absolute', left:extX-18, top:extY-18, width:36, height:36, borderRadius:'50%', background:`radial-gradient(circle, ${color}bb 0%, transparent 70%)`, filter:'blur(7px)' }}/>
+      </div>
+    )
+  }
+
+  // Astronomer: tiny red glow from handheld lamp only, no sky contribution
+  if (lamp.type === 'astronomer') {
+    const r = 16
+    return (
+      <div className="absolute pointer-events-none" style={W}>
+        <div style={{ position:'absolute', left:gx-r, top:gy-r, width:r*2, height:r*2, borderRadius:'50%', background:'radial-gradient(circle, #ff330055 0%, transparent 70%)', filter:'blur(4px)' }}/>
+        <div style={{ position:'absolute', left:gx-6, top:gy-6, width:12, height:12, borderRadius:'50%', background:'radial-gradient(circle, #ff3300aa 0%, transparent 70%)', filter:'blur(2px)' }}/>
       </div>
     )
   }
