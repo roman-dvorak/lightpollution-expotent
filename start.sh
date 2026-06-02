@@ -1,38 +1,30 @@
 #!/usr/bin/env bash
-# Spustí Stellarium (pokud ještě neběží) a poté webový kiosek.
-set -euo pipefail
+# Spustí Stellarium (monitor 2, fullscreen, bez GUI) a poté webový kiosek (monitor 1).
 
+REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 STEL_PORT=8090
-APP_DIR="$(cd "$(dirname "$0")/app" && pwd)"
+APP_DIR="$REPO_DIR/app"
+APP_PORT=5173
+APP_URL="http://localhost:$APP_PORT"
+STEL_STARTUP_SCRIPT="$REPO_DIR/stellarium_startup.ssc"
 
 # ── Stellarium ────────────────────────────────────────────────────────────────
 
 if pgrep -x stellarium > /dev/null; then
   echo "[stellarium] již běží"
 else
-  echo "[stellarium] spouštím..."
-  stellarium --full-screen yes &
+  echo "[stellarium] spouštím na monitoru 2..."
+  stellarium \
+    --screen-number 1 \
+    --full-screen yes \
+    --startup-script "$STEL_STARTUP_SCRIPT" \
+    &
   STEL_PID=$!
   echo "[stellarium] PID $STEL_PID"
 
-  # Čekej na HTTP API (max 30 s)
-  echo -n "[stellarium] čekám na API na portu $STEL_PORT"
-  for i in $(seq 1 30); do
-    if curl -sf "http://localhost:$STEL_PORT/api/main/status" > /dev/null 2>&1; then
-      echo " OK"
-      break
-    fi
-    echo -n "."
-    sleep 1
-    if [ "$i" -eq 30 ]; then
-      echo ""
-      echo "[stellarium] CHYBA: API na portu $STEL_PORT neodpovídá po 30 s" >&2
-      echo "  Zkontrolujte, že je plugin Remote Control v ~/.stellarium/config.ini povolen:" >&2
-      echo "    [plugins_load_at_startup]  RemoteControl = true" >&2
-      echo "    [RemoteControl]            autostart = true  port = $STEL_PORT" >&2
-      exit 1
-    fi
-  done
+  # Nečekej na API – pokud není RemoteControl, timeout by zastavil celý skript
+  echo "[stellarium] probíhá na pozadí, pokračuji..."
+  sleep 3
 fi
 
 # ── Webová aplikace ───────────────────────────────────────────────────────────
@@ -43,4 +35,44 @@ if [ ! -d "$APP_DIR/node_modules" ]; then
 fi
 
 echo "[app] spouštím vývojový server..."
-exec npm --prefix "$APP_DIR" run dev
+npm --prefix "$APP_DIR" run dev &
+APP_PID=$!
+
+# Čekej na dev server (max 20 s)
+echo -n "[app] čekám na server na portu $APP_PORT"
+for i in $(seq 1 20); do
+  if curl -sf "$APP_URL" > /dev/null 2>&1; then
+    echo " OK"
+    break
+  fi
+  echo -n "."
+  sleep 1
+  if [ "$i" -eq 20 ]; then
+    echo ""
+    echo "[app] CHYBA: dev server na portu $APP_PORT neodpovídá po 20 s" >&2
+  fi
+done
+
+# ── Chromium kiosk (monitor 1) ────────────────────────────────────────────────
+
+echo "[kiosk] spouštím Chromium v kiosk režimu na monitoru 1..."
+chromium-browser \
+  --kiosk \
+  --window-position=0,0 \
+  --noerrdialogs \
+  --disable-infobars \
+  --disable-translate \
+  --disable-features=TranslateUI \
+  --disable-pinch \
+  --overscroll-history-navigation=0 \
+  --no-first-run \
+  --disable-session-crashed-bubble \
+  "$APP_URL" &
+KIOSK_PID=$!
+echo "[kiosk] PID $KIOSK_PID"
+
+# ── Úklid ────────────────────────────────────────────────────────────────────
+
+trap 'echo "[shutdown]"; kill $APP_PID $KIOSK_PID 2>/dev/null; wait' EXIT
+
+wait $APP_PID

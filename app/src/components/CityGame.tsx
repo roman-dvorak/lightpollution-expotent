@@ -1,6 +1,7 @@
 import React, { useRef, useState, useCallback, useEffect, type ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { fadeLightPollution, lpToBortle, bortleToLP } from '../services/stellarium'
+import { fadeLightPollution, lpToBortle } from '../services/stellarium'
+import { useBortleAudio } from '../hooks/useBortleAudio'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -541,6 +542,14 @@ export default function CityGame() {
   const [status, setStatus] = useState<string | null>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
   const [canvasH, setCanvasH] = useState(500)
+  const [isDemo, setIsDemo] = useState(false)
+  const inactivityRef = useRef<ReturnType<typeof setTimeout>>()
+  const demoIntervalRef = useRef<ReturnType<typeof setInterval>>()
+
+  const resetInactivityTimer = useCallback(() => {
+    if (inactivityRef.current) clearTimeout(inactivityRef.current)
+    inactivityRef.current = setTimeout(() => setIsDemo(true), 60_000)
+  }, [])
 
   useEffect(() => {
     const obs = new ResizeObserver(e => setCanvasH(e[0]?.contentRect.height ?? 500))
@@ -548,20 +557,79 @@ export default function CityGame() {
     return () => obs.disconnect()
   }, [])
 
+  // inactivity timer — 60s without click triggers demo
+  useEffect(() => {
+    resetInactivityTimer()
+    return () => { if (inactivityRef.current) clearTimeout(inactivityRef.current) }
+  }, [resetInactivityTimer])
+
+  // demo interval
+  useEffect(() => {
+    if (!isDemo) {
+      if (demoIntervalRef.current) clearInterval(demoIntervalRef.current)
+      return
+    }
+    demoIntervalRef.current = setInterval(() => {
+      setLights(prev => {
+        const r = Math.random()
+        // 10%: clear all
+        if (r < 0.10) return []
+        // 20%: remove 1-2 random lights
+        if (r < 0.30 && prev.length > 0) {
+          const count = Math.min(1 + Math.floor(Math.random() * 2), prev.length)
+          const toRemove = new Set<number>()
+          while (toRemove.size < count) toRemove.add(Math.floor(Math.random() * prev.length))
+          return prev.filter((_, i) => !toRemove.has(i))
+        }
+        // 70%: add a light near bottom (if under limit)
+        if (prev.length >= MAX_LIGHTS) return prev
+        const type = LAMP_ORDER[Math.floor(Math.random() * LAMP_ORDER.length)]
+        const x = 5 + Math.random() * 90
+        const y = 93 + Math.random() * 3
+        return [...prev, { id: nextId++, type, x, y }]
+      })
+    }, 1500)
+    return () => { if (demoIntervalRef.current) clearInterval(demoIntervalRef.current) }
+  }, [isDemo])
+
   const totalLP = Math.min(1.0, lights.reduce((s, l) => s + LAMPS[l.type].contribution, 0.00001))
   const bortle  = lpToBortle(totalLP)
   const lpPercent = Math.min(100, ((Math.log10(totalLP) + 5) / 5) * 100)
   const skyColor  = smoothSkyColor(lpPercent)
+  const { muted, toggleMute } = useBortleAudio(bortle)
+
+
+  const lpTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    const lp = Math.min(1.0, lights.reduce((s, l) => s + LAMPS[l.type].contribution, 0.00001))
-    const b  = lpToBortle(lp)
-    fadeLightPollution(bortleToLP(b))
-      .then(() => console.debug('stel LP ok', bortleToLP(b)))
-      .catch(() => setStatus(t('stel.error')))
+    if (lpTimerRef.current) clearTimeout(lpTimerRef.current)
+    lpTimerRef.current = setTimeout(() => {
+      const lp = Math.min(1.0, lights.reduce((s, l) => s + LAMPS[l.type].contribution, 0.00001))
+      // Power curve: compress low LP values so first few lamps barely change the sky
+      const stelLP = Math.pow(lp, 1.5)
+      fadeLightPollution(stelLP)
+        .then(() => console.debug('stel LP ok', stelLP))
+        .catch(() => setStatus(t('stel.error')))
+    }, 300)
+    return () => { if (lpTimerRef.current) clearTimeout(lpTimerRef.current) }
   }, [lights, t])
 
+  const handleReset = useCallback(() => {
+    if (isDemo) setIsDemo(false)
+    setLights([])
+    resetInactivityTimer()
+  }, [isDemo, resetInactivityTimer])
+
+
   const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    // clicking during demo stops it and clears lights
+    if (isDemo) {
+      setIsDemo(false)
+      setLights([])
+      resetInactivityTimer()
+      return
+    }
+    resetInactivityTimer()
     if (lights.length >= MAX_LIGHTS) return
     const rect = canvasRef.current?.getBoundingClientRect()
     if (!rect) return
@@ -569,12 +637,12 @@ export default function CityGame() {
     const y = ((e.clientY - rect.top)  / rect.height) * 100
     if (y > 97) return
     setLights(prev => [...prev, { id: nextId++, type: selected, x, y }])
-  }, [selected, lights.length])
+  }, [selected, lights.length, isDemo, resetInactivityTimer])
 
   const atLimit = lights.length >= MAX_LIGHTS
 
   return (
-    <div className="flex flex-col" style={{ height: 'calc(100vh - 53px)' }}>
+    <div className="flex flex-col" style={{ height: "calc(100vh - 53px)", overflow: "hidden" }}>
 
       {/* ── Canvas ── */}
       <div
@@ -629,13 +697,14 @@ export default function CityGame() {
           <span className="text-white text-sm font-bold whitespace-nowrap">{t('city.bortle')} {bortle}/9</span>
           <span className="text-slate-500 text-xs whitespace-nowrap">{lights.length}/{MAX_LIGHTS}</span>
           {status && <span className="text-xs text-green-400 whitespace-nowrap">{status}</span>}
-          <button onClick={() => setLights([])} className="ml-auto px-3 py-1.5 rounded-lg border border-slate-700 text-slate-400 text-sm hover:border-red-700 hover:text-red-400 transition-all">
+          <button onClick={toggleMute} title={muted ? t("city.soundOff") : t("city.soundOn")} className="px-2 py-1.5 rounded-lg border border-slate-700 text-slate-300 text-sm hover:border-slate-500 transition-all flex-shrink-0">{muted ? "🔇" : "🔊"}</button>
+          <button onClick={handleReset} className="ml-auto px-3 py-1.5 rounded-lg border border-slate-700 text-slate-400 text-sm hover:border-red-700 hover:text-red-400 transition-all">
             {t('city.reset')}
           </button>
         </div>
 
         {/* Lamp selector */}
-        <div className="flex gap-2 px-4 pb-3 pt-1 overflow-x-auto">
+        <div className="flex gap-2 px-4 pb-3 pt-1 overflow-x-auto no-scrollbar">
           {LAMP_ORDER.map(type => {
             const def   = LAMPS[type]
             const color = def.kelvin > 0 ? kelvinToHex(def.kelvin) : '#555'
@@ -643,9 +712,11 @@ export default function CityGame() {
             return (
               <button key={type} onClick={() => setSelected(type)}
                 className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl border transition-all flex-shrink-0 ${active ? 'border-blue-400 bg-blue-900/40' : 'border-slate-700 bg-slate-800/40 hover:border-slate-500'}`}
-                style={{ minWidth: 100 }}>
-                <div style={{ height: 56, display: 'flex', alignItems: 'flex-end' }}>
-                  {LAMP_SVG[type](color)}
+                style={{ width: 140 }}>
+                <div style={{ height: 56, overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                  <div style={{ transform: `scale(${Math.min(1, 56 / def.svgH)})`, transformOrigin: 'bottom center', flexShrink: 0 }}>
+                    {LAMP_SVG[type](color)}
+                  </div>
                 </div>
                 <span className={`text-xs font-semibold ${active ? 'text-blue-200' : 'text-slate-300'}`}>
                   {t(`city.lights.${type}`)}

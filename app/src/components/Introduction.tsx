@@ -183,7 +183,7 @@ export default function Introduction() {
       {/* ── 3-column topic grid ── */}
       <div className="flex-1 grid grid-cols-3 gap-4 px-8 pb-4 min-h-0">
         {TOPICS.map((col, ci) => (
-          <div key={ci} className="flex flex-col gap-4">
+          <div key={ci} className="flex flex-col gap-2">
             {col.map(topic => (
               <TopicCard
                 key={topic.id}
@@ -259,10 +259,10 @@ export default function Introduction() {
 function TopicCard({ topic, lang, onOpen }: { topic: Topic; lang: 'cs' | 'en'; onOpen: () => void }) {
   const content = topic[lang]
   return (
-    <div className="relative flex-1 rounded-2xl border border-slate-700 bg-slate-800/40 p-5 flex flex-col gap-2 min-h-0">
+    <div className="relative flex-1 rounded-2xl border border-slate-700 bg-slate-800/40 p-3 flex flex-col gap-1 min-h-0">
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-2xl leading-none">{topic.icon}</span>
+          <span className="text-xl leading-none">{topic.icon}</span>
           <h3 className="text-white font-semibold leading-tight">{content.title}</h3>
         </div>
         <button
