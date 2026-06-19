@@ -48,8 +48,9 @@ export async function resetToIntro(): Promise<void> {
   await new Promise(r => setTimeout(r, (FLY + 0.5) * 1000))
 
   // Zero light pollution (Bortle 1)
-  await setProp('StelSkyDrawer.lightPollutionLuminance', String(BORTLE_TO_LP[1]))
-  _currentLP = BORTLE_TO_LP[1]
+  const resetLP = 0.0000001
+  await setProp('StelSkyDrawer.lightPollutionLuminance', String(resetLP))
+  _currentLP = resetLP
 
   // GUI hiding — Stellarium 0.20+ scripting method
   await runScript('try { core.setGuiVisible(false); } catch(e) {}').catch(console.warn)

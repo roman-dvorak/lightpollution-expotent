@@ -1,0 +1,2 @@
+// Hide all GUI elements on startup – čistá obloha bez panelů
+core.setGuiVisible(false);

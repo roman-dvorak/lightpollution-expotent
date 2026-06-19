@@ -57,6 +57,9 @@ Obsah této sekce bude doplněn.`,
     },
     height: 'Výška',
     maxReached: 'Dosažen limit prvků',
+    soundOn: "Zvuk zapnutý",
+    soundOff: "Zvuk vypnutý",
+    centerSky: 'Vycentrovat oblohu',
   },
   globe: {
     title: 'Světelný atlas',
@@ -68,6 +71,19 @@ Obsah této sekce bude doplněn.`,
     sendToStel: 'Zobrazit ve Stellariu',
     lat: 'Zeměpisná šířka',
     lon: 'Zeměpisná délka',
+  },
+  about: {
+    button: 'O projektu',
+    title: 'O projektu',
+    body: `Rozviť město, zhasni oblohu je interaktivní webová aplikace, která názorně ukazuje dopad světelného znečištění na noční oblohu.
+
+Uživatel umisťuje různé typy pouličních lamp, reflektorů a dalších světelných zdrojů na noční panorama města a v reálném čase sleduje, jak se mění jas oblohy — od přirozeně tmavé (Bortle 1) až po přesvětlenou městskou (Bortle 9).
+
+Aplikace je propojena s planetáriem Stellarium, takže kliknutím na Bortleho stupnici nebo rozmístěním světel se aktuální úroveň znečištění přenese přímo do virtuální oblohy.
+
+Cílem projektu je popularizovat problematiku světelného znečištění a ukázat, že správně navržené osvětlení může výrazně snížit jeho dopady — aniž bychom se museli vzdát bezpečí a komfortu, které nám umělé světlo poskytuje.
+
+Projekt vznikl v roce 2026 pro Veletrh Vědy.`,
   },
   stel: {
     sending: 'Odesílám do Stellaria…',

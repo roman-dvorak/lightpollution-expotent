@@ -57,6 +57,9 @@ Content for this section will be added.`,
     },
     height: 'Height',
     maxReached: 'Element limit reached',
+    soundOn: "Sound on",
+    soundOff: "Sound off",
+    centerSky: 'Center sky',
   },
   globe: {
     title: 'Light Pollution Atlas',
@@ -68,6 +71,19 @@ Content for this section will be added.`,
     sendToStel: 'Show in Stellarium',
     lat: 'Latitude',
     lon: 'Longitude',
+  },
+  about: {
+    button: 'About',
+    title: 'About',
+    body: `Light Up the City, Dim the Sky is an interactive web application that visually demonstrates the impact of light pollution on the night sky.
+
+Users place different types of street lamps, floodlights, and other light sources onto a nocturnal city panorama and watch in real time as the sky brightness changes — from a naturally dark sky (Bortle 1) to an over-lit urban sky (Bortle 9).
+
+The application is connected to the Stellarium planetarium, so clicking on the Bortle scale or placing lights instantly transfers the current pollution level into the virtual sky.
+
+The goal of the project is to raise awareness about light pollution and show that properly designed lighting can significantly reduce its impact — without sacrificing the safety and comfort that artificial light provides.
+
+The project was created in 2026 for the Science Fair (Veletrh Vědy).`,
   },
   stel: {
     sending: 'Sending to Stellarium…',
