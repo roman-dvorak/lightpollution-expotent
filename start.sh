@@ -14,7 +14,7 @@ if pgrep -x stellarium > /dev/null; then
   echo "[stellarium] již běží"
 else
   echo "[stellarium] spouštím na monitoru 2..."
-  stellarium \
+  stellarium -platform xcb \
     --screen-number 1 \
     --full-screen yes \
     --startup-script "$STEL_STARTUP_SCRIPT" \

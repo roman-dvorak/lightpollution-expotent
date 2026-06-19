@@ -86,3 +86,74 @@ Skript projede sadu astronomických lokalit (Praha, Atacama, Mauna Kea…), anim
 - Pokud aplikace hlásí *„Chyba komunikace se Stellariem"*, zkontrolujte, že Stellarium běží a plugin Remote Control je aktivní.
 - CORS chyby v prohlížeči: ve vývojovém módu se volání proxují přes Vite (`/api` → `localhost:8090`). V produkci musí být aplikace a Stellarium na stejném hostu, nebo je nutné nakonfigurovat CORS v Stellariu.
 - Konzole prohlížeče zobrazuje podrobné chyby komunikace.
+
+## Automatické spuštění (kiosková instalace)
+
+Pro produkční nasazení na dedikovaném stroji lze aplikaci spustit automaticky po přihlášení uživatele pomocí systemd user service.
+
+### Předpoklady
+
+- Systém používá Wayland, Stellarium se spouští přes XCB (X11 compatibility layer)
+- K dispozici jsou dva monitory: Stellarium běží na monitoru 2 (DP-3), Chromium kiosek na monitoru 1 (DP-1)
+
+### Instalace service
+
+```bash
+# Zkopírovat service soubor
+cp /home/lptent/.config/systemd/user/lightpollution.service ~/.config/systemd/user/
+
+# Nebo vytvořit ručně:
+cat > ~/.config/systemd/user/lightpollution.service << 'UNIT'
+[Unit]
+Description=Light Pollution Expotent (Stellarium + webový kiosek)
+After=graphical-session.target
+Wants=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/home/lptent/repos/lightpollution-expotent/start.sh
+Restart=on-failure
+RestartSec=5
+
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/lptent/.Xauthority
+
+WorkingDirectory=/home/lptent/repos/lightpollution-expotent
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=graphical-session.target
+UNIT
+
+# Povolit a spustit
+systemctl --user daemon-reload
+systemctl --user enable lightpollution.service
+```
+
+Service se spustí automaticky po každém přihlášení do grafického prostředí.
+
+### Spuštění / zastavení ručně
+
+```bash
+systemctl --user start lightpollution.service
+systemctl --user stop lightpollution.service
+systemctl --user status lightpollution.service
+```
+
+### Logy
+
+```bash
+journalctl --user -u lightpollution.service -f
+```
+
+### Poznámka k DISPLAY
+
+Pokud Stellarium nenajde display, ověřte správnou hodnotu `DISPLAY` po přihlášení:
+
+```bash
+echo $DISPLAY
+```
+
+A upravte `Environment=DISPLAY=:X` v service souboru podle výstupu.
