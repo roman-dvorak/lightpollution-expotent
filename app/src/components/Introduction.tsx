@@ -175,10 +175,11 @@ export default function Introduction() {
     <div className="flex flex-col" style={{ height: 'calc(100vh - 53px)' }}>
 
       {/* ── Title row ── */}
-      <div className="flex-shrink-0 px-8 pt-6 pb-3">
-        <h1 className="text-3xl font-bold text-white">{t('intro.title')}</h1>
-        <p className="text-slate-400 mt-1">{t('intro.subtitle')}</p>
-      </div>
+        <div className="flex-shrink-0 px-8 pt-6 pb-3">
+          <h1 className="text-3xl font-bold text-white">{t('intro.title')}</h1>
+          <p className="text-slate-400 mt-1">{t('intro.subtitle')}</p>
+          <p className="text-slate-300 mt-2 whitespace-pre-line" style={{ lineHeight: '1.4' }}>{t('intro.content')}</p>
+        </div>
 
       {/* ── 3-column topic grid ── */}
       <div className="flex-1 grid grid-cols-3 gap-4 px-8 pb-4 min-h-0">

@@ -12,10 +12,13 @@ Záře měst se šíří do okolí a rozsvěcuje noční oblohu natolik, že vě
 nikdy neuvidí Mléčnou dráhu pouhým okem.
 
 Astronomové měří světelné znečištění na tzv. Bortleově stupnici (1–9):
-stupeň 1 představuje dokonale tmavou oblohu (desetitisíce hvězd, zřetelná Mléčná dráha),
-stupeň 9 typické centrum velkoměsta, kde je vidět jen Měsíc a nejjasnější planety.
+• stupeň 1 – čistá temná obloha, Milky Way viditelná.
+• stupeň 5 – střední svit, část Milky Way viditelná.
+• stupeň 9 – silná městská světelnost, jen Měsíc a planety.
 
-Obsah této sekce bude doplněn.`,
+Interaktivní simulátor ukazuje, jak různé osvětlení mění jas oblohy – ve webovém fallback režimu i při připojení ke Stellariu.
+
+Použijte Bortle pruh níže k nastavení úrovně znečištění, nebo klikněte na záložku „Nasviťme město“ a umisťujte jednotlivé lampy a sledujte dopad v reálném čase.`,
     bortle: 'Bortleova stupnice',
     bortleDesc: 'Klikněte na stupeň a zobrazte jej na simulované obloze (nebo ve Stellariu)',
   },

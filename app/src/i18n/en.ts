@@ -8,14 +8,16 @@ export default {
     title: 'Light Pollution',
     subtitle: 'How humanity lost the starry sky',
     content: `Light pollution is excessive or inappropriate artificial lighting caused by human activity.
-The glow of cities spreads across the landscape and brightens the night sky so much that
-most people on Earth will never see the Milky Way with the naked eye.
+The glow of cities spreads across the landscape and brightens the night sky so much that most people on Earth will never see the Milky Way with the naked eye.
 
-Astronomers measure light pollution using the Bortle Dark-Sky Scale (1–9):
-Class 1 represents a truly dark sky (tens of thousands of stars, vivid Milky Way),
-Class 9 is a typical city centre where only the Moon and brightest planets are visible.
+Astronomers measure light pollution using the Bortle Dark‑Sky Scale (1–9):
+• Class 1 – pristine dark sky, Milky Way visible.
+• Class 5 – moderate glow, Milky Way partially visible.
+• Class 9 – bright city, only Moon & planets visible.
 
-Content for this section will be added.`,
+The interactive simulator lets you explore how different lighting choices affect the night sky, both in the web fallback and when connected to Stellarium.
+
+Use the Bortle strip below to set a target light‑pollution level, or click the “Light Up the City” tab to place individual lamps and see the impact in real time.`,
     bortle: 'The Bortle Scale',
     bortleDesc: 'Click a class to display it on the simulated sky (or in Stellarium)',
   },
