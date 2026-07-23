@@ -620,6 +620,32 @@ export default function CityGame() {
     resetInactivityTimer()
   }, [isDemo, resetInactivityTimer])
 
+  const handleCanvasDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const type = e.dataTransfer.getData('text/plain') as LightType
+    if (!LAMP_ORDER.includes(type)) return
+    const rect = canvasRef.current?.getBoundingClientRect()
+    if (!rect) return
+    const x = ((e.clientX - rect.left) / rect.width) * 100
+    const y = ((e.clientY - rect.top) / rect.height) * 100
+    if (y > 97) return
+    if (isDemo) {
+      setIsDemo(false)
+      setLights([{ id: nextId++, type, x, y }])
+    } else {
+      setLights(prev => prev.length >= MAX_LIGHTS ? prev : [...prev, { id: nextId++, type, x, y }])
+    }
+    resetInactivityTimer()
+  }, [isDemo, resetInactivityTimer])
+
+  const handleLampClick = useCallback((e: React.MouseEvent, id: number) => {
+    e.stopPropagation()
+    if (isDemo) setIsDemo(false)
+    setLights(prev => prev.filter(l => l.id !== id))
+    resetInactivityTimer()
+  }, [isDemo, resetInactivityTimer])
+
 
   const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     // clicking during demo stops it and clears lights
@@ -648,6 +674,8 @@ export default function CityGame() {
       <div
         ref={canvasRef}
         onClick={handleCanvasClick}
+        onDragOver={(e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy' }}
+        onDrop={handleCanvasDrop}
         className={`relative flex-1 overflow-hidden select-none ${atLimit ? 'cursor-not-allowed' : 'cursor-crosshair'}`}
         style={{ background: `linear-gradient(to bottom, ${skyColor} 0%, #0d0d1a 80%)` }}
       >
@@ -668,8 +696,16 @@ export default function CityGame() {
           const def = LAMPS[l.type]
           const color = def.kelvin > 0 ? kelvinToHex(def.kelvin) : '#333'
           return (
-            <div key={l.id} className="absolute pointer-events-none" style={{ left: `${l.x}%`, top: `${l.y}%`, transform: 'translate(-50%, -100%)' }}>
-              {LAMP_SVG[l.type](color)}
+            <div
+              key={l.id}
+              title={t('city.remove')}
+              onClick={(e) => handleLampClick(e, l.id)}
+              className="absolute cursor-pointer"
+              style={{ left: `${l.x}%`, top: `${l.y}%`, transform: 'translate(-50%, -100%)' }}
+            >
+              <div className="transition-transform duration-150 hover:scale-105 hover:brightness-110 origin-bottom">
+                {LAMP_SVG[l.type](color)}
+              </div>
             </div>
           )
         })}
@@ -703,6 +739,10 @@ export default function CityGame() {
           </button>
         </div>
 
+        <div className="px-4 pb-1 text-[11px] text-slate-500">
+          {t('city.dragHint')}
+        </div>
+
         {/* Lamp selector */}
         <div className="flex gap-2 px-4 pb-3 pt-1 overflow-x-auto no-scrollbar">
           {LAMP_ORDER.map(type => {
@@ -710,7 +750,11 @@ export default function CityGame() {
             const color = def.kelvin > 0 ? kelvinToHex(def.kelvin) : '#555'
             const active = selected === type
             return (
-              <button key={type} onClick={() => setSelected(type)}
+              <button
+                key={type}
+                draggable
+                onDragStart={(e) => { e.dataTransfer.setData('text/plain', type); e.dataTransfer.effectAllowed = 'copy' }}
+                onClick={() => setSelected(type)}
                 className={`flex flex-col items-center gap-1 px-3 py-2 rounded-xl border transition-all flex-shrink-0 ${active ? 'border-blue-400 bg-blue-900/40' : 'border-slate-700 bg-slate-800/40 hover:border-slate-500'}`}
                 style={{ width: 140 }}>
                 <div style={{ height: 56, overflow: 'hidden', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
