@@ -1,7 +1,7 @@
 import { useRef, useCallback, useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import Globe from 'react-globe.gl'
-import { applyState } from '../services/stellarium'
+import { applyState } from '../services/skyService'
 
 // ─── Zone palette ────────────────────────────────────────────────────────────
 // Exact RGB values extracted from world2024_low3.png (Falchi LP atlas, 15 zones)

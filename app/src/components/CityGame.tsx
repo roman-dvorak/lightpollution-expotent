@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect, type ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
-import { fadeLightPollution, lpToBortle } from '../services/stellarium'
+import { fadeLightPollution, lpToBortle } from '../services/skyService'
 import { useBortleAudio } from '../hooks/useBortleAudio'
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
@@ -543,8 +543,8 @@ export default function CityGame() {
   const canvasRef = useRef<HTMLDivElement>(null)
   const [canvasH, setCanvasH] = useState(500)
   const [isDemo, setIsDemo] = useState(false)
-  const inactivityRef = useRef<ReturnType<typeof setTimeout>>()
-  const demoIntervalRef = useRef<ReturnType<typeof setInterval>>()
+  const inactivityRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const demoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const resetInactivityTimer = useCallback(() => {
     if (inactivityRef.current) clearTimeout(inactivityRef.current)

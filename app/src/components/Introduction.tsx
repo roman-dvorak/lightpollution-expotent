@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { applyState, bortleToLP, resetToIntro } from '../services/stellarium'
+import { applyState, bortleToLP, resetToIntro } from '../services/skyService'
 
 // ─── Content data ─────────────────────────────────────────────────────────────
 

@@ -17,7 +17,7 @@ Class 9 is a typical city centre where only the Moon and brightest planets are v
 
 Content for this section will be added.`,
     bortle: 'The Bortle Scale',
-    bortleDesc: 'Click a class to display it in Stellarium',
+    bortleDesc: 'Click a class to display it on the simulated sky (or in Stellarium)',
   },
   city: {
     title: 'Light Up the City',
@@ -26,7 +26,7 @@ Content for this section will be added.`,
     reset: 'Reset',
     totalLP: 'Light pollution',
     bortle: 'Bortle',
-    sendToStel: 'Show in Stellarium',
+    sendToStel: 'Show in sky',
     lights: {
       globe:           'Globe lamp',
       fullCutoff:      'Full cutoff',
@@ -63,12 +63,12 @@ Content for this section will be added.`,
   },
   globe: {
     title: 'Light Pollution Atlas',
-    subtitle: 'Click on the globe to display the light pollution level in Stellarium',
+    subtitle: 'Click on the globe to display the light pollution level (in Stellarium if connected)',
     clickHint: 'Click anywhere on the globe',
     location: 'Location',
     zone: 'Zone',
     bortleIndex: 'Bortle index',
-    sendToStel: 'Show in Stellarium',
+    sendToStel: 'Show in sky',
     lat: 'Latitude',
     lon: 'Longitude',
   },
@@ -86,8 +86,8 @@ The goal of the project is to raise awareness about light pollution and show tha
 The project was created in 2026 for the Science Fair (Veletrh Vědy).`,
   },
   stel: {
-    sending: 'Sending to Stellarium…',
-    ok: 'Stellarium updated',
+    sending: 'Updating sky…',
+    ok: 'Sky updated',
     error: 'Error communicating with Stellarium',
   },
 }

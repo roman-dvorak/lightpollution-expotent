@@ -1,19 +1,23 @@
 # Stellarium Kiosk
 
-Interaktivní kiosková aplikace o světelném znečištění. Ovládá běžící instanci Stellaria přes jeho HTTP API a vizualizuje dopad různých typů osvětlení na noční oblohu.
+Interaktivní kiosková aplikace o světelném znečištění. V režimu s **Stellariem** ovládá běžící instanci planetária přes jeho HTTP API. Ve veřejném **web režimu** funguje i bez Stellaria — simulace oblohy se vykresluje přímo v prohlížeči.
+
+Veřejně nasazená verze: `https://<uživatel>.github.io/stel_control/` (po zapnutí GitHub Pages viz níže).
 
 ## Architektura
 
 ```
 stel_control/
-├── app/          React + TypeScript SPA (Vite)
+├── .github/workflows/deploy.yml  – GitHub Actions: build + deploy na GitHub Pages
+├── app/                          React + TypeScript SPA (Vite)
 │   └── src/
 │       ├── components/
 │       │   ├── Introduction.tsx   – 3-sloupcová informační tabule + Bortleova stupnice
 │       │   ├── CityGame.tsx       – interaktivní simulátor světelného znečištění
 │       │   └── GlobeView.tsx      – 3D globus s atlasem světelného znečištění
 │       ├── services/
-│       │   └── stellarium.ts      – klient Stellarium HTTP API (skripty + vlastnosti)
+│       │   ├── skyService.ts      – abstrakce: Stellarium / fallback web režim
+│       │   └── stellarium.ts      – přímý klient Stellarium HTTP API
 │       └── i18n/                  – překlady CS / EN
 ├── data/         podpůrné obrázky (LP mapa, loga)
 └── test/         Python testovací skripty pro Stellarium API
@@ -62,13 +66,34 @@ npm run preview # lokální preview sestavení
 
 Složku `dist/` lze servírovat jakýmkoliv statickým HTTP serverem. Stellarium musí stále běžet na portu 8090 (nebo nastavte správnou `BASE` URL v `src/services/stellarium.ts`).
 
+## Automatický deploy na GitHub Pages
+
+Repozitář obsahuje workflow `.github/workflows/deploy.yml`, které při každém pushi do větve `main` automaticky:
+
+1. Nainstaluje závislosti (`npm ci`).
+2. Sestaví aplikaci (`npm run build`).
+3. Nahraje `app/dist/` na GitHub Pages.
+
+### Nastavení v GitHub UI
+
+1. Otevři repo na GitHub → **Settings → Pages**.
+2. U položky **Build and deployment** vyber **Source: GitHub Actions**.
+3. Po prvním pushi do `main` se workflow spustí automaticky — výsledek najdeš v záložce **Actions**.
+4. Hotovo. Veřejná URL bude `https://<uživatel>.github.io/stel_control/`.
+
+> Pokud později použiješ vlastní doménu, změň `base` v `app/vite.config.ts` na `'/'`.
+
+### Výukový režim se Stellariem
+
+Na veřejné URL aplikace automaticky detekuje, jestli prohlížeč vidí `http://localhost:8090` (běžící Stellarium). Pokud ano, použije se plný kioskový režim; jinak se spustí web fallback.
+
 ## Záložky aplikace
 
 | Záložka | Popis |
 |---|---|
 | **Úvod** | Informační karty o světelném znečištění (9 témat ve 3 sloupcích) + Bortleova stupnice — kliknutím na stupeň B1–B9 se nastaví odpovídající znečištění ve Stellariu. |
 | **Nasviťme město** | Simulátor: klikejte do scény a přidávejte různé typy osvětlení. Celkové světelné znečištění se promítá živě do Stellaria. |
-| **Světelný atlas** | 3D globus — kliknutím na libovolné místo na Zemi se načte skutečná úroveň světelného znečištění (Falchiho atlas 2024) a nastaví se ve Stellariu. |
+| **Světelný atlas** | 3D globus — kliknutím na libovolné místo na Zemi se načte skutečná úroveň světelného znečištění (Falchiho atlas 2024) a nastaví se na obloze (ve Stellariu, pokud je připojeno). |
 
 Přepínač **CS / EN** v pravém rohu přepíná jazyk celé aplikace.
 

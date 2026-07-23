@@ -18,6 +18,18 @@ async function setProp(id: string, value: string) {
   if (!res.ok) throw new Error(`stelproperty/set failed: ${res.status}`)
 }
 
+export async function isAvailable(): Promise<boolean> {
+  try {
+    const res = await fetch(`${BASE}/main/status`, {
+      method: 'GET',
+      signal: AbortSignal.timeout(800),
+    })
+    return res.ok
+  } catch {
+    return false
+  }
+}
+
 export type StellariumState = {
   lat: number
   lon: number

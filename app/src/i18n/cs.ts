@@ -17,7 +17,7 @@ stupeň 9 typické centrum velkoměsta, kde je vidět jen Měsíc a nejjasnějš
 
 Obsah této sekce bude doplněn.`,
     bortle: 'Bortleova stupnice',
-    bortleDesc: 'Klikněte na stupeň a zobrazte jej ve Stellariu',
+    bortleDesc: 'Klikněte na stupeň a zobrazte jej na simulované obloze (nebo ve Stellariu)',
   },
   city: {
     title: 'Nasviťme město',
@@ -26,7 +26,7 @@ Obsah této sekce bude doplněn.`,
     reset: 'Resetovat',
     totalLP: 'Světelné znečištění',
     bortle: 'Bortle',
-    sendToStel: 'Zobrazit ve Stellariu',
+    sendToStel: 'Zobrazit na obloze',
     lights: {
       globe:           'Kulová lampa',
       fullCutoff:      'Plná clona',
@@ -63,12 +63,12 @@ Obsah této sekce bude doplněn.`,
   },
   globe: {
     title: 'Světelný atlas',
-    subtitle: 'Klikněte na mapu a zobrazte úroveň světelného znečištění ve Stellariu',
+    subtitle: 'Klikněte na mapu a zobrazte úroveň světelného znečištění (ve Stellariu, pokud je připojeno)',
     clickHint: 'Klikněte kamkoli na globus',
     location: 'Poloha',
     zone: 'Zóna',
     bortleIndex: 'Bortle index',
-    sendToStel: 'Zobrazit ve Stellariu',
+    sendToStel: 'Zobrazit na obloze',
     lat: 'Zeměpisná šířka',
     lon: 'Zeměpisná délka',
   },
@@ -86,8 +86,8 @@ Cílem projektu je popularizovat problematiku světelného znečištění a uká
 Projekt vznikl v roce 2026 pro Veletrh Vědy.`,
   },
   stel: {
-    sending: 'Odesílám do Stellaria…',
-    ok: 'Stellarium aktualizováno',
+    sending: 'Aktualizuji oblohu…',
+    ok: 'Obloha aktualizována',
     error: 'Chyba komunikace se Stellariem',
   },
 }

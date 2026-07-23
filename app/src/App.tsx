@@ -1,14 +1,24 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import Introduction from './components/Introduction'
 import CityGame from './components/CityGame'
-import { resetToIntro } from './services/stellarium'
+import GlobeView from './components/GlobeView'
+import { resetToIntro, detectSkyMode, type SkyMode } from './services/skyService'
 import asuLogo from './assets/asu-logo.png'
 import casLogo from './assets/cas-logo.png'
 import './i18n'
 
+type Tab = 'intro' | 'city' | 'globe'
+
 export default function App() {
   const { t, i18n } = useTranslation()
+  const [tab, setTab] = useState<Tab>('intro')
   const [showAbout, setShowAbout] = useState(false)
+  const [skyMode, setSkyMode] = useState<SkyMode | null>(null)
+
+  useEffect(() => {
+    detectSkyMode().then(setSkyMode).catch(() => setSkyMode('fallback'))
+  }, [])
 
   function handleTitleClick() {
     resetToIntro()
@@ -20,6 +30,12 @@ export default function App() {
     i18n.changeLanguage(i18n.language === 'cs' ? 'en' : 'cs')
   }
 
+  const tabs: { id: Tab; label: string }[] = [
+    { id: 'intro', label: t('nav.intro') },
+    { id: 'city', label: t('nav.city') },
+    { id: 'globe', label: t('nav.globe') },
+  ]
+
   return (
     <div className="min-h-screen flex flex-col bg-[#0a0a14]">
       <header className="sticky top-0 z-50 flex items-center gap-4 px-6 py-3 border-b border-slate-800 bg-[#0a0a14]/90 backdrop-blur">
@@ -28,7 +44,36 @@ export default function App() {
           <span className="text-white font-semibold text-sm hidden sm:block">Rozviť město, zhasni oblohu</span>
         </div>
 
+        <nav className="hidden sm:flex items-center gap-1">
+          {tabs.map(({ id, label }) => (
+            <button
+              key={id}
+              onClick={() => setTab(id)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                tab === id
+                  ? 'bg-blue-900/60 text-blue-100 border border-blue-700'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60 border border-transparent'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+
         <div className="flex-1" />
+
+        {skyMode && (
+          <span
+            className={`hidden md:inline-flex text-xs px-2 py-1 rounded-full border ${
+              skyMode === 'stellarium'
+                ? 'border-green-800 text-green-400 bg-green-900/20'
+                : 'border-slate-700 text-slate-500 bg-slate-900/40'
+            }`}
+            title={skyMode === 'stellarium' ? 'Stellarium detekováno' : 'Fallback režim bez Stellaria'}
+          >
+            {skyMode === 'stellarium' ? 'Stellarium' : 'Web'}
+          </span>
+        )}
 
         <button
           onClick={() => setShowAbout(true)}
@@ -45,8 +90,25 @@ export default function App() {
         </button>
       </header>
 
+      {/* Mobile tab selector */}
+      <div className="sm:hidden flex border-b border-slate-800 bg-[#0a0a14]/90">
+        {tabs.map(({ id, label }) => (
+          <button
+            key={id}
+            onClick={() => setTab(id)}
+            className={`flex-1 py-2 text-sm font-medium transition-colors ${
+              tab === id ? 'text-blue-300 border-b-2 border-blue-500' : 'text-slate-400'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
       <main className="flex-1">
-        <CityGame />
+        {tab === 'intro' && <Introduction />}
+        {tab === 'city' && <CityGame />}
+        {tab === 'globe' && <GlobeView />}
       </main>
 
       {/* About modal */}
