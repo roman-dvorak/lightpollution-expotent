@@ -69,7 +69,7 @@ export default function App() {
                 ? 'border-green-800 text-green-400 bg-green-900/20'
                 : 'border-slate-700 text-slate-500 bg-slate-900/40'
             }`}
-            title={skyMode === 'stellarium' ? 'Stellarium detekováno' : 'Fallback režim bez Stellaria'}
+            title={skyMode === 'stellarium' ? 'Planetárium' : 'Web režim'}
           >
             {skyMode === 'stellarium' ? 'Stellarium' : 'Web'}
           </span>

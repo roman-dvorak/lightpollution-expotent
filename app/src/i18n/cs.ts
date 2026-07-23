@@ -16,11 +16,11 @@ Astronomové měří světelné znečištění na tzv. Bortleově stupnici (1–
 • stupeň 5 – střední svit, část Milky Way viditelná.
 • stupeň 9 – silná městská světelnost, jen Měsíc a planety.
 
-Interaktivní simulátor ukazuje, jak různé osvětlení mění jas oblohy – ve webovém fallback režimu i při připojení ke Stellariu.
+Interaktivní simulátor ukazuje, jak různé osvětlení mění jas oblohy.
 
 Použijte Bortle pruh níže k nastavení úrovně znečištění, nebo klikněte na záložku „Nasviťme město“ a umisťujte jednotlivé lampy a sledujte dopad v reálném čase.`,
     bortle: 'Bortleova stupnice',
-    bortleDesc: 'Klikněte na stupeň a zobrazte jej na simulované obloze (nebo ve Stellariu)',
+    bortleDesc: 'Klikněte na stupeň a zobrazte jej na simulované obloze',
   },
   city: {
     title: 'Nasviťme město',
@@ -68,7 +68,7 @@ Použijte Bortle pruh níže k nastavení úrovně znečištění, nebo kliknět
   },
   globe: {
     title: 'Světelný atlas',
-    subtitle: 'Klikněte na mapu a zobrazte úroveň světelného znečištění (ve Stellariu, pokud je připojeno)',
+    subtitle: 'Klikněte na mapu a zobrazte úroveň světelného znečištění',
     clickHint: 'Klikněte kamkoli na globus',
     location: 'Poloha',
     zone: 'Zóna',
@@ -84,7 +84,7 @@ Použijte Bortle pruh níže k nastavení úrovně znečištění, nebo kliknět
 
 Uživatel umisťuje různé typy pouličních lamp, reflektorů a dalších světelných zdrojů na noční panorama města a v reálném čase sleduje, jak se mění jas oblohy — od přirozeně tmavé (Bortle 1) až po přesvětlenou městskou (Bortle 9).
 
-Aplikace je propojena s planetáriem Stellarium, takže kliknutím na Bortleho stupnici nebo rozmístěním světel se aktuální úroveň znečištění přenese přímo do virtuální oblohy.
+Kliknutím na Bortleho stupnici nebo rozmístěním světel uvidíte, jak se aktuální úroveň znečištění projeví na simulované obloze.
 
 Cílem projektu je popularizovat problematiku světelného znečištění a ukázat, že správně navržené osvětlení může výrazně snížit jeho dopady — aniž bychom se museli vzdát bezpečí a komfortu, které nám umělé světlo poskytuje.
 

@@ -15,11 +15,11 @@ Astronomers measure light pollution using the Bortle Dark‑Sky Scale (1–9):
 • Class 5 – moderate glow, Milky Way partially visible.
 • Class 9 – bright city, only Moon & planets visible.
 
-The interactive simulator lets you explore how different lighting choices affect the night sky, both in the web fallback and when connected to Stellarium.
+The interactive simulator lets you explore how different lighting choices affect the night sky.
 
 Use the Bortle strip below to set a target light‑pollution level, or click the “Light Up the City” tab to place individual lamps and see the impact in real time.`,
     bortle: 'The Bortle Scale',
-    bortleDesc: 'Click a class to display it on the simulated sky (or in Stellarium)',
+    bortleDesc: 'Click a class to display it on the simulated sky',
   },
   city: {
     title: 'Light Up the City',
@@ -67,7 +67,7 @@ Use the Bortle strip below to set a target light‑pollution level, or click the
   },
   globe: {
     title: 'Light Pollution Atlas',
-    subtitle: 'Click on the globe to display the light pollution level (in Stellarium if connected)',
+    subtitle: 'Click on the globe to display the light pollution level',
     clickHint: 'Click anywhere on the globe',
     location: 'Location',
     zone: 'Zone',
@@ -83,7 +83,7 @@ Use the Bortle strip below to set a target light‑pollution level, or click the
 
 Users place different types of street lamps, floodlights, and other light sources onto a nocturnal city panorama and watch in real time as the sky brightness changes — from a naturally dark sky (Bortle 1) to an over-lit urban sky (Bortle 9).
 
-The application is connected to the Stellarium planetarium, so clicking on the Bortle scale or placing lights instantly transfers the current pollution level into the virtual sky.
+Clicking on the Bortle scale or placing lights instantly shows the current pollution level on the simulated sky.
 
 The goal of the project is to raise awareness about light pollution and show that properly designed lighting can significantly reduce its impact — without sacrificing the safety and comfort that artificial light provides.
 
